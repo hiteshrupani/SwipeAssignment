@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct SwipeAssignmentApp: App {
+    
+    @StateObject var productsViewModel = ProductsViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                ProductsListView()
+            }
+            .environmentObject(productsViewModel)
         }
     }
 }
