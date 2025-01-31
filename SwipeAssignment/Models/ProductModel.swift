@@ -5,8 +5,13 @@
 //  Created by Hitesh Rupani on 31/01/25.
 //
 
+import Foundation
+
 // MARK: - Product
-struct Product: Codable {
+struct Product: Codable, Identifiable {
+    let id = UUID()
+    var isFavorite: Bool = false
+    
     let image: String?
     let price: Double?
     let productName: String?

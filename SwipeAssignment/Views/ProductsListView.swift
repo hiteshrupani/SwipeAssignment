@@ -12,13 +12,21 @@ struct ProductsListView: View {
     @EnvironmentObject var viewModel: ProductsViewModel
     
     var body: some View {
-        VStack {
-            Text("Hello")
+        List {
+            ForEach (viewModel.allProducts) { product in
+                ProductCardView(product: product)
+                    .listRowSeparator(.hidden)
+            }
         }
-        .padding()
+        .listStyle(PlainListStyle())
         .task {
             await viewModel.loadProducts()
         }
+        .refreshable {
+            await viewModel.loadProducts()
+        }
+        .navigationTitle("Products")
+        .toolbarBackgroundVisibility(.visible, for: .navigationBar)
     }
 }
 
