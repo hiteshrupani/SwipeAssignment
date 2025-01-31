@@ -12,28 +12,25 @@ struct ProductCardView: View {
     
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: product.image ?? "")) { phase in
-                if let image = phase.image {
-                    image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: 125, maxHeight: 125)
-                    .background(Color.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
+            if product.image != "" {
+                // MARK: - Image
+                urlImage(url: product.image)
+            } else {
+                // MARK: - Placeholder Image
+                urlImage(url: "https://placehold.co/100/jpg?text=?")
             }
             
             VStack (alignment: .leading) {
                 HStack (alignment: .top) {
+                    // MARK: - Product Name and Type
                     VStack (alignment: .leading, spacing: 5){
                         Text(product.productName ?? "")
-                            .font(.title)
-                            .fontWeight(.semibold)
+                            .font(.headline)
+                            .multilineTextAlignment(.leading)
                         
                         Text(product.productType ?? "")
-                            .font(.footnote)
-                            .fontWeight(.medium)
-                            .padding(.horizontal)
+                            .font(.caption)
+                            .padding(.horizontal, 10)
                             .padding(.vertical, 3)
                             .background {
                                 Capsule()
@@ -42,42 +39,42 @@ struct ProductCardView: View {
                     }
                     
                     Spacer()
-                    
-                    Button {
-//                        product.isFavorite.toggle()
-                    } label: {
-                        Image(systemName: product.isFavorite ? "heart.fill" : "heart")
-                            .foregroundStyle(Color.black)
-                            .font(.title)
-                            .padding(.top, 5)
-                            .padding(3)
-                    }
                 }
-                .padding(.bottom)
                 
+                // MARK: - Price and Tax
                 HStack {
                     Text("\((product.price ?? 0.0).formatted(.currency(code: "INR")))")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.medium)
                     
                     Text("\((product.tax ?? 0.0).formatted())% GST")
-                        .font(.subheadline)
+                        .font(.footnote)
                         .opacity(0.7)
-                        .offset(y: 4)
+                        
                 }
             }
             .padding(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(8)
-        .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.clear)
-                .stroke(Color(.label), lineWidth: 1)
-        }
     }
 }
 
 #Preview {
-    ProductCardView(product: Product(image: "https://vx-erp-product-images.s3.ap-south-1.amazonaws.com/9_1738263477_0_image.jpg", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+    ProductCardView(product: Product(image: "", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+}
+
+extension ProductCardView {
+    // MARK: - Image
+    private func urlImage(url: String?) -> some View {
+        AsyncImage(url: URL(string: url ?? "")) { phase in
+            if let image = phase.image {
+                image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 100, height: 100)
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
 }

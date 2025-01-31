@@ -12,21 +12,23 @@ struct ProductsListView: View {
     @EnvironmentObject var viewModel: ProductsViewModel
     
     var body: some View {
-        List {
-            ForEach (viewModel.allProducts) { product in
-                ProductCardView(product: product)
-                    .listRowSeparator(.hidden)
+        ZStack {
+            Color(.systemGroupedBackground).ignoresSafeArea()
+            
+            List {
+                ForEach (viewModel.allProducts) { product in
+                    ProductCardView(product: product)
+                        .listRowSeparator(.hidden)
+                }
             }
+            .listStyle(.inset)
         }
-        .listStyle(PlainListStyle())
         .task {
             await viewModel.loadProducts()
         }
         .refreshable {
             await viewModel.loadProducts()
         }
-        .navigationTitle("Products")
-        .toolbarBackgroundVisibility(.visible, for: .navigationBar)
     }
 }
 
