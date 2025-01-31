@@ -17,7 +17,7 @@ struct ProductCardView: View {
                 urlImage(url: product.image)
             } else {
                 // MARK: - Placeholder Image
-                urlImage(url: "https://placehold.co/100/jpg?text=?")
+                imagePlaceholder()
             }
             
             VStack (alignment: .leading) {
@@ -60,7 +60,7 @@ struct ProductCardView: View {
 }
 
 #Preview {
-    ProductCardView(product: Product(image: "", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+    ProductCardView(product: Product(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
 }
 
 extension ProductCardView {
@@ -74,7 +74,19 @@ extension ProductCardView {
                 .frame(width: 100, height: 100)
                 .background(Color.blue)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+            } else {
+                ProgressView()
+                    .frame(width: 100, height: 100)
             }
         }
+    }
+    
+    private func imagePlaceholder() -> some View {
+        Image(.productPlaceholder)
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(width: 100, height: 100)
+        .background(Color.blue)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }

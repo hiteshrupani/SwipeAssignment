@@ -15,6 +15,10 @@ struct ProductsListView: View {
         ZStack {
             Color(.systemGroupedBackground).ignoresSafeArea()
             
+            // MARK: - Header
+            
+            
+            // MARK: - List
             List {
                 ForEach (viewModel.allProducts) { product in
                     ProductCardView(product: product)
