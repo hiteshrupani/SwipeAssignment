@@ -10,6 +10,7 @@ import PhotosUI
 
 struct ProductAddView: View {
     @EnvironmentObject var viewModel: ProductsViewModel
+    @Environment(\.dismiss) var dismiss
     
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showAlert: Bool = false
@@ -19,105 +20,82 @@ struct ProductAddView: View {
     @State var priceText: String = ""
     @State var taxText: String = ""
     
+    var anyTextFieldEmpty: Bool {
+        if nameText == "" || typeText == "" || priceText == "" || taxText == "" {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         ZStack {
             // background
             
-            ScrollView {
-                VStack {
-                    // Image
-                    PhotosPicker(selection: $photosPickerItem, matching: .images) {
-                        if let image = viewModel.productImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: Screen.width)
-                                .frame(height: Screen.height * 0.4)
-                                .clipShape(RoundedRectangle(cornerRadius: 25))
-                                .padding(.vertical)
-                            
-                        } else {
-                            Image(systemName: "photo.badge.plus")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundStyle(Color.gray)
-                                .frame(width: 150, height: 150)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: Screen.height * 0.4)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 25)
-                                        .fill(Color.gray.opacity(0.3))
-                                }
-                                .padding(.vertical)
-                        }
-                    }
-                    
-                    // Name
-                    TextField("Name", text: $nameText)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Capsule())
-                    
-                    // Type
-                    TextField("Type", text: $typeText)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Capsule())
-                    
-                    // Price
-                    TextField("Price", text: $priceText)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Capsule())
-                        .keyboardType(.decimalPad)
-                    
-                    // Tax
-                    TextField("Tax", text: $taxText)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Capsule())
-                        .keyboardType(.decimalPad)
-                    
-                    
-                    // Add Button
+            VStack (spacing: 0) {
+                // MARK: - Header
+                HStack {
                     Button {
-                        if nameText == "" ||
-                            typeText == "" ||
-                            priceText == "" ||
-                            taxText == "" {
-                            showAlert = true
-                        } else {
-                            viewModel.productToAdd = AddProductRequest(
-                                name: nameText,
-                                type: typeText,
-                                price: priceText,
-                                tax: taxText
-                            )
-                            Task {
-                                await viewModel.addProduct()
+                        dismiss()
+                    } label: {
+                        CircleButtonView(iconName: "arrow.left")
+                    }
+                    
+                    Spacer()
+                    
+                    Text("Add Product")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.theme.accent)
+                    
+                    Spacer()
+
+                    Button {
+                        addProduct()
+                    } label: {
+                        CircleButtonView(iconName: "checkmark")
+                    }
+                
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Color.theme.background)
+                        .ignoresSafeArea()
+                }
+                
+                // MARK: - Details
+                ScrollView {
+                    VStack (spacing: 20) {
+                        // MARK: - Image
+                        PhotosPicker(selection: $photosPickerItem, matching: .images) {
+                            if let image = viewModel.productImage {
+                                selectedImage(image: image)
+                            } else {
+                                placeholderImage()
                             }
                         }
-                    } label: {
-                        Text("Add Product")
-                            .foregroundStyle(Color(.systemBackground))
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background {
-                                Capsule()
-                            }
+                        
+                        // MARK: - Text Fields
+                        VStack (spacing: 12) {
+                            stringTextField(title: "Name", fieldText: $nameText)
+                            stringTextField(title: "Type", fieldText: $typeText)
+                            numberTextField(title: "Price", fieldText: $priceText)
+                            numberTextField(title: "Tax", fieldText: $taxText)
+                        }
                     }
+                    .padding()
                 }
             }
-            .padding()
-            .frame(width: Screen.width)
         }
+        .toolbarVisibility(.hidden, for: .navigationBar)
         .onChange(of: photosPickerItem) {_, _ in
             Task {
                 if let photosPickerItem,
                    let data = try? await photosPickerItem.loadTransferable(type: Data.self) {
                     if let image = UIImage(data: data) {
                         viewModel.productImage = image
-                        
                     }
                 }
                 photosPickerItem = nil
@@ -132,6 +110,23 @@ struct ProductAddView: View {
             )
         }
     }
+    
+    private func addProduct(){
+        if anyTextFieldEmpty {
+            showAlert = true
+        } else {
+            viewModel.productToAdd = AddProductRequest(
+                name: nameText,
+                type: typeText,
+                price: priceText,
+                tax: taxText
+            )
+            Task {
+                await viewModel.addProduct()
+                dismiss()
+            }
+        }
+    }
 }
 
 #Preview {
@@ -139,4 +134,60 @@ struct ProductAddView: View {
         ProductAddView()
     }
     .environmentObject(ProductsViewModel())
+}
+
+// MARK: - SubView Functions
+extension ProductAddView {
+    private func selectedImage(image: UIImage) -> some View {
+        RoundedRectangle(cornerRadius: 25)
+            .frame(width: .infinity)
+            .frame(height: Screen.height * 0.4)
+            .overlay(
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 25))
+    }
+    
+    private func placeholderImage() -> some View {
+        Image(systemName: "photo.badge.plus")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .foregroundStyle(Color.gray)
+            .frame(width: 150, height: 150)
+            .frame(maxWidth: .infinity)
+            .frame(height: Screen.height * 0.4)
+            .background {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.gray.opacity(0.3))
+            }
+    }
+    
+    private func stringTextField(title: String, fieldText: Binding<String>) -> some View {
+        VStack (alignment: .leading) {
+            Text(title)
+                .font(.headline)
+                .opacity(0.8)
+            
+            TextField("Enter \(title.lowercased()) here...", text: fieldText)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+        }
+    }
+    
+    private func numberTextField(title: String, fieldText: Binding<String>) -> some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.headline)
+                .opacity(0.8)
+            
+            TextField("Enter \(title.lowercased()) here...", text: $priceText)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                .keyboardType(.decimalPad)
+        }
+    }
 }
