@@ -13,19 +13,51 @@ struct ProductsListView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            //            Color(.systemGroupedBackground).ignoresSafeArea()
             
-            // MARK: - Header
-            
-            
-            // MARK: - List
-            List {
-                ForEach (viewModel.allProducts) { product in
-                    ProductCardView(product: product)
-                        .listRowSeparator(.hidden)
+            VStack {
+                // MARK: - Header
+                VStack {
+                    HStack {
+                        // title
+                        Text("Products")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Spacer()
+                        
+                        // add product button
+                        NavigationLink {
+                            ProductAddView()
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color.black)
+                                .frame(width: 50, height: 50)
+                                .background {
+                                    Circle()
+                                        .foregroundStyle(Color.white)
+                                }
+                                .shadow(radius: 10)
+                        }
+                    }
+                    .padding()
+                    
+                    // search
+                    
+                    
                 }
+                
+                // MARK: - List
+                List {
+                    ForEach (viewModel.allProducts) { product in
+                        ProductCardView(product: product)
+                            .listRowSeparator(.hidden)
+                    }
+                }
+                .listStyle(.inset)
             }
-            .listStyle(.inset)
         }
         .task {
             await viewModel.loadProducts()

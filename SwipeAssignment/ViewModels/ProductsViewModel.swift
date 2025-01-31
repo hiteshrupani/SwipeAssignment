@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 @MainActor
 class ProductsViewModel: ObservableObject {
@@ -13,8 +14,19 @@ class ProductsViewModel: ObservableObject {
     
     @Published var allProducts: Products = []
     
+    @Published var productToAdd: AddProductRequest?
+    @Published var productImage: UIImage?
+    
     func loadProducts() async {
         let products = await productService.getProducts()
         allProducts = products
+    }
+    
+    func addProduct() async {
+        if let productToAdd {
+            await productService.addProduct(product: productToAdd, image: productImage)
+        } else {
+            print("No product to add!")
+        }
     }
 }

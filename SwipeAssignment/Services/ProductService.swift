@@ -19,7 +19,6 @@ class ProductService {
         do {
             let data = try await NetworkManager.downloadData(fromURL: request)
             let decodedData = try JSONDecoder().decode(Products.self, from: data)
-            print(decodedData)
             return decodedData
         } catch {
             print("error getting data from GET api", error)
@@ -56,17 +55,17 @@ class ProductService {
             
             // adding image
             if let image = image {
-                guard let imageData = image.pngData() else { return }
+                guard let imageData = image.jpegData(compressionQuality: 0.8) else { return }
                 
                 body.append("--\(boundary)\r\n".data(using: .utf8)!)
-                body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"\(UUID().uuidString).png\"\r\n".data(using: .utf8)!)
-                body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"\(UUID().uuidString).jpg\"\r\n".data(using: .utf8)!)
+                body.append("Content-Type: image/jpg\r\n\r\n".data(using: .utf8)!)
                 body.append(imageData)
                 body.append("\r\n".data(using: .utf8)!)
             }
             
             // closing body
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("--\(boundary)--\r\n".data(using: .utf8)!)
             request.httpBody = body
             
             let data = try await NetworkManager.downloadData(fromURL: request)
