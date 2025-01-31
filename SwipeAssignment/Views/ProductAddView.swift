@@ -168,9 +168,10 @@ extension ProductAddView {
         VStack (alignment: .leading) {
             Text(title)
                 .font(.headline)
-                .opacity(0.8)
+                .foregroundStyle(Color.theme.accent)
             
             TextField("Enter \(title.lowercased()) here...", text: fieldText)
+                .font(.headline)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 25))
@@ -181,9 +182,10 @@ extension ProductAddView {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.headline)
-                .opacity(0.8)
+                .foregroundStyle(Color.theme.accent)
             
-            TextField("Enter \(title.lowercased()) here...", text: $priceText)
+            TextField("Enter \(title.lowercased()) here...", text: fieldText)
+                .font(.headline)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 25))
