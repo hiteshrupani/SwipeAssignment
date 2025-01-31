@@ -11,43 +11,36 @@ struct ProductsListView: View {
     
     @EnvironmentObject var viewModel: ProductsViewModel
     
+    @State var searchText: String = ""
+    
     var body: some View {
         ZStack {
-            //            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color.theme.background.ignoresSafeArea()
             
             VStack {
                 // MARK: - Header
-                VStack {
+                VStack  {
                     HStack {
-                        // title
+                        // MARK: - Title
                         Text("Products")
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                            .foregroundStyle(Color.theme.accent)
                         
                         Spacer()
                         
-                        // add product button
+                        // MARK: - Add product button
                         NavigationLink {
                             ProductAddView()
                         } label: {
-                            Image(systemName: "plus")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color.black)
-                                .frame(width: 50, height: 50)
-                                .background {
-                                    Circle()
-                                        .foregroundStyle(Color.white)
-                                }
-                                .shadow(radius: 10)
+                            CircleButtonView(iconName: "plus")
                         }
                     }
-                    .padding()
                     
-                    // search
-                    
-                    
+                    // MARK: - Search
+                    SearchBarView(searchText: $searchText)
                 }
+                .padding()
                 
                 // MARK: - List
                 List {
@@ -73,4 +66,8 @@ struct ProductsListView: View {
         ProductsListView()
     }
     .environmentObject(ProductsViewModel())
+}
+
+extension ProductsListView {
+    
 }
