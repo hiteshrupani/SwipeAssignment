@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Product
-struct Product: Codable, Identifiable {
+struct GetProductResponse: Codable, Identifiable {
     let id = UUID()
     var isFavorite: Bool = false
     
@@ -26,4 +26,4 @@ struct Product: Codable, Identifiable {
     }
 }
 
-typealias Products = [Product]
+typealias Products = [GetProductResponse]

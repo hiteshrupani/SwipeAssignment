@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProductCardView: View {
-    var product: Product
+    var product: GetProductResponse
     
     var body: some View {
         HStack {
@@ -60,7 +60,7 @@ struct ProductCardView: View {
 }
 
 #Preview {
-    ProductCardView(product: Product(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+    ProductCardView(product: GetProductResponse(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
 }
 
 extension ProductCardView {
