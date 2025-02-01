@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductCardView: View {
     var product: GetProductResponse
+    var favoriteAction: () -> Void
     
     var body: some View {
         HStack {
@@ -27,27 +28,42 @@ struct ProductCardView: View {
 }
 
 #Preview {
-    ProductCardView(product: GetProductResponse(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+    ProductCardView(product: GetProductResponse(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0), favoriteAction: {})
 }
 
 extension ProductCardView {
     private func productDetails() -> some View {
         VStack (alignment: .leading, spacing: 15) {
             // MARK: - Product Name and Type
-            VStack (alignment: .leading, spacing: 5) {
-                Text(product.productType ?? "")
-                    .font(.caption)
-                    .opacity(0.7)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 3)
-                    .background {
-                        Capsule()
-                            .opacity(0.2)
-                    }
+            HStack {
+                VStack (alignment: .leading, spacing: 5) {
+                    Text(product.productType ?? "")
+                        .font(.caption)
+                        .opacity(0.7)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background {
+                            Capsule()
+                                .opacity(0.2)
+                        }
+                    
+                    Text(product.productName ?? "")
+                        .font(.headline)
+                        .multilineTextAlignment(.leading)
+                }
                 
-                Text(product.productName ?? "")
-                    .font(.headline)
-                    .multilineTextAlignment(.leading)
+                Spacer()
+                
+                Button {
+                    favoriteAction()
+                } label: {
+                    Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.theme.accent)
+                }
+                .padding(10)
+                .buttonStyle(PlainButtonStyle())
             }
             
             // MARK: - Price and Tax
@@ -85,7 +101,7 @@ extension ProductCardView {
     private func imageToDisplay(image: Image) -> some View {
         image
             .resizable()
-            .aspectRatio(1, contentMode: .fill)
+            .aspectRatio(contentMode: .fill)
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: 10))
     }

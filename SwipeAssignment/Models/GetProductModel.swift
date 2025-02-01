@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Product
 struct GetProductResponse: Codable, Identifiable {
     let id = UUID()
-    var isFavorite: Bool = false
+    private(set) var isFavorite: Bool = false
     
     let image: String?
     let price: Double?
@@ -23,6 +23,10 @@ struct GetProductResponse: Codable, Identifiable {
         case productName = "product_name"
         case productType = "product_type"
         case tax
+    }
+    
+    mutating func toggleFavorite() {
+        isFavorite.toggle()
     }
 }
 

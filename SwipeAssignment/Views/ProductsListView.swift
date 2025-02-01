@@ -21,7 +21,9 @@ struct ProductsListView: View {
                 // MARK: - List
                 List {
                     ForEach (viewModel.productsToDisplay) { product in
-                        ProductCardView(product: product)
+                        ProductCardView(product: product, favoriteAction: {
+                            viewModel.toggleFavorite(for: product.id)
+                        })
                     }
                 }
                 .listStyle(.plain)

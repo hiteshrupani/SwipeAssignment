@@ -42,4 +42,10 @@ class ProductsViewModel: ObservableObject {
             print("No product to add!")
         }
     }
+    
+    func toggleFavorite(for productId: UUID) {
+        if let index = allProducts.firstIndex(where: { $0.id == productId }) {
+            allProducts[index].toggleFavorite()
+        }
+    }
 }
