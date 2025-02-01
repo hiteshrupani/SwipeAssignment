@@ -11,15 +11,23 @@ import PhotosUI
 struct ProductAddView: View {
     @EnvironmentObject var viewModel: ProductsViewModel
     @Environment(\.dismiss) var dismiss
+
+    enum AlertType {
+        case emptyFields
+        case invalidEntry
+        case success
+    }
     
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showAlert: Bool = false
     
+    @State var selectedCategory: ProductCategory?
     @State var nameText: String = ""
     @State var priceText: String = ""
     @State var taxText: String = ""
+    @FocusState private var textFieldIsFocused: Bool
     
-    @State var selectedCategory: ProductCategory?
+    @State var alertType: AlertType = .emptyFields
     
     var anyFieldEmpty: Bool {
         if selectedCategory == nil || nameText == "" || priceText == "" || taxText == "" {
@@ -53,10 +61,11 @@ struct ProductAddView: View {
                             categoryMenu()
                             
                             // MARK: - Text Fields
-                            stringTextField(title: "Name", fieldText: $nameText)
-                            numberTextField(title: "Price", fieldText: $priceText)
-                            numberTextField(title: "Tax", fieldText: $taxText)
+                            nameTextField()
+                            priceTextField()
+                            taxTextField()
                         }
+                        .focused($textFieldIsFocused)
                     }
                     .padding()
                 }
@@ -75,17 +84,14 @@ struct ProductAddView: View {
             }
         }
         .alert(isPresented: $showAlert) {
-            Alert(title: Text("Error"),
-                  message: Text("All fields are required!"),
-                  dismissButton: .default(Text("Got it!")) {
-                showAlert = false
-            }
-            )
+            showAlert(type: alertType)
         }
     }
     
     private func addProduct(){
+        textFieldIsFocused = false
         if anyFieldEmpty {
+            alertType = .emptyFields
             showAlert = true
         } else {
             viewModel.productToAdd = AddProductRequest(
@@ -97,7 +103,8 @@ struct ProductAddView: View {
             Task {
                 await viewModel.addProduct()
                 viewModel.productImage = nil
-                dismiss()
+                alertType = .success
+                showAlert = true
             }
         }
     }
@@ -218,14 +225,14 @@ extension ProductAddView {
         .clipShape(RoundedRectangle(cornerRadius: 25))
     }
     
-    // MARK: - Text Field
-    private func stringTextField(title: String, fieldText: Binding<String>) -> some View {
+    // MARK: - Name Text Field
+    private func nameTextField() -> some View {
         VStack (alignment: .leading) {
-            Text(title)
+            Text("Name")
                 .font(.headline)
                 .foregroundStyle(Color.theme.accent)
             
-            TextField("Enter \(title.lowercased()) here...", text: fieldText)
+            TextField("Enter name here...", text: $nameText)
                 .font(.headline)
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -233,18 +240,67 @@ extension ProductAddView {
         }
     }
     
-    private func numberTextField(title: String, fieldText: Binding<String>) -> some View {
+    // MARK: - Price Text Field
+    private func priceTextField() -> some View {
         VStack(alignment: .leading) {
-            Text(title)
+            Text("Price")
                 .font(.headline)
                 .foregroundStyle(Color.theme.accent)
             
-            TextField("Enter \(title.lowercased()) here...", text: fieldText)
+            TextField("Enter price here...", text: $priceText)
+                .keyboardType(.decimalPad)
                 .font(.headline)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 25))
+        }
+    }
+    
+    // MARK: - Tax Text Field
+    private func taxTextField() -> some View {
+        VStack(alignment: .leading) {
+            Text("Tax")
+                .font(.headline)
+                .foregroundStyle(Color.theme.accent)
+            
+            TextField("Enter tax here...", text: $taxText)
                 .keyboardType(.decimalPad)
+                .font(.headline)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+        }
+    }
+    
+    private func showAlert(type: AlertType) -> Alert {
+        let dismissAlert: () -> Void = {
+            showAlert = false
+        }
+        
+        let successAction: () -> Void = {
+            showAlert = false
+            dismiss()
+        }
+        
+        switch type {
+        case .emptyFields:
+            return Alert(
+                title: Text("All fields are required!"),
+                message: Text("Please fill in all the required fields to add a product."),
+                dismissButton: .default(Text("Got it!"), action: dismissAlert)
+            )
+        case .invalidEntry:
+            return Alert(
+                title: Text("Oops!"),
+                message: Text("You have entered an invalid value. Please try again."),
+                dismissButton: .default(Text("Got it!"), action: dismissAlert)
+            )
+        case .success:
+            return Alert(
+                title: Text("Success!"),
+                message: Text("The product has been added successfully!"),
+                dismissButton: .default(Text("Got it!"), action: successAction)
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchBarView: View {
     @Binding var searchText: String
+    @FocusState private var searchIsFocused: Bool
     
     var body: some View {
         HStack {
@@ -20,8 +21,9 @@ struct SearchBarView: View {
             
             // MARK: - Text Field
             TextField("Search by name or category...", text: $searchText)
-                .foregroundStyle(Color.theme.accent)
+                .focused($searchIsFocused)
                 .disableAutocorrection(true)
+                .foregroundStyle(Color.theme.accent)
                 .overlay(
                     // MARK: - Cross Button
                     Image(systemName: "xmark.circle.fill")
@@ -30,6 +32,7 @@ struct SearchBarView: View {
                         .foregroundStyle(Color.theme.accent)
                         .opacity(searchText.isEmpty ? 0.0 : 1.0)
                         .onTapGesture {
+                            searchIsFocused = false
                             searchText = ""
                         }
                     ,alignment: .trailing
