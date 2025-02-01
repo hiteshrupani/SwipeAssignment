@@ -5,17 +5,6 @@
 //  Created by Hitesh Rupani on 31/01/25.
 //
 
-enum ProductCategory: String, CaseIterable {
-    case groceries
-    case electronics
-    case fashion
-    case home
-    case beauty
-    case sports
-    case education
-    case toys
-}
-
 import SwiftUI
 import PhotosUI
 
@@ -107,6 +96,7 @@ struct ProductAddView: View {
             )
             Task {
                 await viewModel.addProduct()
+                viewModel.productImage = nil
                 dismiss()
             }
         }
