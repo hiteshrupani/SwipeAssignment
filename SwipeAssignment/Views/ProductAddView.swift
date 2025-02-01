@@ -80,7 +80,7 @@ struct ProductAddView: View {
                         // MARK: - Text Fields
                         VStack (spacing: 12) {
                             stringTextField(title: "Name", fieldText: $nameText)
-                            stringTextField(title: "Type", fieldText: $typeText)
+                            stringTextField(title: "Category", fieldText: $typeText)
                             numberTextField(title: "Price", fieldText: $priceText)
                             numberTextField(title: "Tax", fieldText: $taxText)
                         }
@@ -140,7 +140,6 @@ struct ProductAddView: View {
 extension ProductAddView {
     private func selectedImage(image: UIImage) -> some View {
         RoundedRectangle(cornerRadius: 25)
-            .frame(width: .infinity)
             .frame(height: Screen.height * 0.4)
             .overlay(
                 Image(uiImage: image)
@@ -160,7 +159,7 @@ extension ProductAddView {
             .frame(height: Screen.height * 0.4)
             .background {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.2))
             }
     }
     

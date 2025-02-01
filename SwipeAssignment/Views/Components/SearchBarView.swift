@@ -14,11 +14,13 @@ struct SearchBarView: View {
         HStack {
             // MARK: - Magnifying Glass
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(
+                    searchText.isEmpty ? Color.gray : Color.theme.accent
+                )
             
             // MARK: - Text Field
             TextField("Search by name or category...", text: $searchText)
-                .foregroundStyle(Color.theme.text)
+                .foregroundStyle(Color.theme.accent)
                 .disableAutocorrection(true)
                 .overlay(
                     // MARK: - Cross Button

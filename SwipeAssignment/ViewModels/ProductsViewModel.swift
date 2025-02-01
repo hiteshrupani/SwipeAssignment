@@ -10,9 +10,22 @@ import UIKit
 
 @MainActor
 class ProductsViewModel: ObservableObject {
-    let productService = ProductService()
+    private let productService = ProductService()
     
     @Published var allProducts: Products = []
+    var productsToDisplay: Products {
+        if searchText == "" {
+            return allProducts
+        } else {
+            return allProducts.filter { (product) -> Bool in
+                let lowercasedText = searchText.lowercased()
+                return (product.productName ?? "").lowercased().contains(lowercasedText) ||
+                (product.productType ?? "").lowercased().contains(lowercasedText)
+            }
+        }
+    }
+    
+    @Published var searchText: String = ""
     
     @Published var productToAdd: AddProductRequest?
     @Published var productImage: UIImage?

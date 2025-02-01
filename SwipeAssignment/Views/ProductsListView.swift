@@ -11,8 +11,6 @@ struct ProductsListView: View {
     
     @EnvironmentObject var viewModel: ProductsViewModel
     
-    @State var searchText: String = ""
-    
     var body: some View {
         ZStack {
             Color.theme.background.ignoresSafeArea()
@@ -38,13 +36,13 @@ struct ProductsListView: View {
                     }
                     
                     // MARK: - Search
-                    SearchBarView(searchText: $searchText)
+                    SearchBarView(searchText: $viewModel.searchText)
                 }
                 .padding()
                 
                 // MARK: - List
                 List {
-                    ForEach (viewModel.allProducts) { product in
+                    ForEach (viewModel.productsToDisplay) { product in
                         ProductCardView(product: product)
                             .listRowSeparator(.hidden)
                     }
