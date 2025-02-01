@@ -15,13 +15,14 @@ class ProductsViewModel: ObservableObject {
     @Published var allProducts: Products = []
     var productsToDisplay: Products {
         if searchText == "" {
-            return allProducts
+            return allProducts.sorted { $0.isFavorite && !$1.isFavorite }
         } else {
             return allProducts.filter { (product) -> Bool in
                 let lowercasedText = searchText.lowercased()
                 return (product.productName ?? "").lowercased().contains(lowercasedText) ||
                 (product.productType ?? "").lowercased().contains(lowercasedText)
             }
+            .sorted { $0.isFavorite && !$1.isFavorite }
         }
     }
     
