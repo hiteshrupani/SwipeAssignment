@@ -16,38 +16,15 @@ struct ProductsListView: View {
             Color.theme.background.ignoresSafeArea()
             
             VStack {
-                // MARK: - Header
-                VStack  {
-                    HStack {
-                        // MARK: - Title
-                        Text("Products")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(Color.theme.accent)
-                        
-                        Spacer()
-                        
-                        // MARK: - Add product button
-                        NavigationLink {
-                            ProductAddView()
-                        } label: {
-                            CircleButtonView(iconName: "plus")
-                        }
-                    }
-                    
-                    // MARK: - Search
-                    SearchBarView(searchText: $viewModel.searchText)
-                }
-                .padding()
+                header()
                 
                 // MARK: - List
                 List {
                     ForEach (viewModel.productsToDisplay) { product in
                         ProductCardView(product: product)
-                            .listRowSeparator(.hidden)
                     }
                 }
-                .listStyle(.inset)
+                .listStyle(.plain)
             }
         }
         .task {
@@ -67,5 +44,29 @@ struct ProductsListView: View {
 }
 
 extension ProductsListView {
-    
+    // MARK: - Header
+    private func header() -> some View {
+        VStack  {
+            HStack {
+                // MARK: - Title
+                Text("Products")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundStyle(Color.theme.accent)
+                
+                Spacer()
+                
+                // MARK: - Add product button
+                NavigationLink {
+                    ProductAddView()
+                } label: {
+                    CircleButtonView(iconName: "plus")
+                }
+            }
+            
+            // MARK: - Search
+            SearchBarView(searchText: $viewModel.searchText)
+        }
+        .padding()
+    }
 }

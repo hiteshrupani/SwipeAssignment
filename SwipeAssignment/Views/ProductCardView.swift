@@ -20,42 +20,9 @@ struct ProductCardView: View {
                 imagePlaceholder()
             }
             
-            VStack (alignment: .leading) {
-                HStack (alignment: .top) {
-                    // MARK: - Product Name and Type
-                    VStack (alignment: .leading, spacing: 5){
-                        Text(product.productName ?? "")
-                            .font(.headline)
-                            .multilineTextAlignment(.leading)
-                        
-                        Text(product.productType ?? "")
-                            .font(.caption)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 3)
-                            .background {
-                                Capsule()
-                                    .opacity(0.2)
-                            }
-                    }
-                    
-                    Spacer()
-                }
-                
-                // MARK: - Price and Tax
-                HStack {
-                    Text("\((product.price ?? 0.0).formatted(.currency(code: "INR")))")
-                        .font(.title3)
-                        .fontWeight(.medium)
-                    
-                    Text("\((product.tax ?? 0.0).formatted())% GST")
-                        .font(.footnote)
-                        .opacity(0.7)
-                        
-                }
-            }
-            .padding(.leading)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            productDetails()
         }
+        .frame(height: 100)
     }
 }
 
@@ -64,16 +31,46 @@ struct ProductCardView: View {
 }
 
 extension ProductCardView {
+    private func productDetails() -> some View {
+        VStack (alignment: .leading, spacing: 15) {
+            // MARK: - Product Name and Type
+            VStack (alignment: .leading, spacing: 5) {
+                Text(product.productType ?? "")
+                    .font(.caption)
+                    .opacity(0.7)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
+                    .background {
+                        Capsule()
+                            .opacity(0.2)
+                    }
+                
+                Text(product.productName ?? "")
+                    .font(.headline)
+                    .multilineTextAlignment(.leading)
+            }
+            
+            // MARK: - Price and Tax
+            HStack (alignment: .bottom, spacing: 7.5) {
+                Text("\((product.price ?? 0.0).formatted(.currency(code: "INR")))")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                
+                Text("\((product.tax ?? 0.0).formatted())% GST")
+                    .font(.footnote)
+                    .opacity(0.7)
+                    .offset(y: -2)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
     // MARK: - Image
     private func urlImage(url: String?) -> some View {
         AsyncImage(url: URL(string: url ?? "")) { phase in
             if let image = phase.image {
-                image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 100, height: 100)
-                .background(Color.blue)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                imageToDisplay(image: image)
             } else {
                 ProgressView()
                     .frame(width: 100, height: 100)
@@ -82,11 +79,14 @@ extension ProductCardView {
     }
     
     private func imagePlaceholder() -> some View {
-        Image(.productPlaceholder)
-        .resizable()
-        .aspectRatio(contentMode: .fill)
-        .frame(width: 100, height: 100)
-        .background(Color.blue)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        imageToDisplay(image: Image(.productPlaceholder))
+    }
+    
+    private func imageToDisplay(image: Image) -> some View {
+        image
+            .resizable()
+            .aspectRatio(1, contentMode: .fill)
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
