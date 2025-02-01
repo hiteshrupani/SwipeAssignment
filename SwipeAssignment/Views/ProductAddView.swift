@@ -5,6 +5,17 @@
 //  Created by Hitesh Rupani on 31/01/25.
 //
 
+enum ProductCategory: String, CaseIterable {
+    case groceries
+    case electronics
+    case fashion
+    case home
+    case beauty
+    case sports
+    case education
+    case toys
+}
+
 import SwiftUI
 import PhotosUI
 
@@ -16,12 +27,13 @@ struct ProductAddView: View {
     @State private var showAlert: Bool = false
     
     @State var nameText: String = ""
-    @State var typeText: String = ""
     @State var priceText: String = ""
     @State var taxText: String = ""
     
-    var anyTextFieldEmpty: Bool {
-        if nameText == "" || typeText == "" || priceText == "" || taxText == "" {
+    @State var selectedCategory: ProductCategory?
+    
+    var anyFieldEmpty: Bool {
+        if selectedCategory == nil || nameText == "" || priceText == "" || taxText == "" {
             return true
         } else {
             return false
@@ -33,37 +45,7 @@ struct ProductAddView: View {
             // background
             
             VStack (spacing: 0) {
-                // MARK: - Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        CircleButtonView(iconName: "arrow.left")
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Add Product")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(Color.theme.accent)
-                    
-                    Spacer()
-
-                    Button {
-                        addProduct()
-                    } label: {
-                        CircleButtonView(iconName: "checkmark")
-                    }
-                
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 25)
-                        .fill(Color.theme.background)
-                        .ignoresSafeArea()
-                }
+                header()
                 
                 // MARK: - Details
                 ScrollView {
@@ -77,10 +59,12 @@ struct ProductAddView: View {
                             }
                         }
                         
-                        // MARK: - Text Fields
                         VStack (spacing: 12) {
+                            // MARK: - Category
+                            categoryMenu()
+                            
+                            // MARK: - Text Fields
                             stringTextField(title: "Name", fieldText: $nameText)
-                            stringTextField(title: "Category", fieldText: $typeText)
                             numberTextField(title: "Price", fieldText: $priceText)
                             numberTextField(title: "Tax", fieldText: $taxText)
                         }
@@ -112,12 +96,12 @@ struct ProductAddView: View {
     }
     
     private func addProduct(){
-        if anyTextFieldEmpty {
+        if anyFieldEmpty {
             showAlert = true
         } else {
             viewModel.productToAdd = AddProductRequest(
                 name: nameText,
-                type: typeText,
+                type: selectedCategory?.rawValue ?? "Unknown",
                 price: priceText,
                 tax: taxText
             )
@@ -136,8 +120,42 @@ struct ProductAddView: View {
     .environmentObject(ProductsViewModel())
 }
 
-// MARK: - SubView Functions
 extension ProductAddView {
+    // MARK: - Header
+    private func header() -> some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                CircleButtonView(iconName: "arrow.left")
+            }
+            
+            Spacer()
+            
+            Text("Add Product")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundStyle(Color.theme.accent)
+            
+            Spacer()
+            
+            Button {
+                addProduct()
+            } label: {
+                CircleButtonView(iconName: "checkmark")
+            }
+            
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Color.theme.background)
+                .ignoresSafeArea()
+        }
+    }
+    
+    // MARK: - Image
     private func selectedImage(image: UIImage) -> some View {
         RoundedRectangle(cornerRadius: 25)
             .frame(height: Screen.height * 0.4)
@@ -162,7 +180,55 @@ extension ProductAddView {
                     .fill(Color.gray.opacity(0.2))
             }
     }
+    // MARK: - Category
+    private func categoryMenu() -> some View {
+        VStack (alignment: .leading) {
+            Text("Category")
+                .font(.headline)
+                .foregroundStyle(Color.theme.accent)
+            
+            // show menu on tapping this
+            Menu {
+                ForEach (ProductCategory.allCases, id: \.self) { category in
+                    Button {
+                        selectedCategory = category
+                    } label: {
+                        HStack {
+                            Text(category.rawValue.capitalized)
+                                 
+                            if selectedCategory == category {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                categoryButton()
+            }
+        }
+    }
     
+    private func categoryButton() -> some View {
+        HStack {
+            Text(selectedCategory?.rawValue.capitalized ?? "Select a category...")
+                .font(.headline)
+                .foregroundStyle(
+                    selectedCategory != nil ?
+                    Color.theme.text : Color(.systemGray2)
+                )
+            
+            Spacer()
+            
+            Image(systemName: "chevron.down")
+                .font(.headline)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.gray.opacity(0.2))
+        .clipShape(RoundedRectangle(cornerRadius: 25))
+    }
+    
+    // MARK: - Text Field
     private func stringTextField(title: String, fieldText: Binding<String>) -> some View {
         VStack (alignment: .leading) {
             Text(title)
