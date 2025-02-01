@@ -101,7 +101,7 @@ struct ProductAddView: View {
         } else {
             viewModel.productToAdd = AddProductRequest(
                 name: nameText,
-                type: selectedCategory?.rawValue ?? "Unknown",
+                type: selectedCategory?.rawValue.capitalized ?? "Unknown",
                 price: priceText,
                 tax: taxText
             )
