@@ -16,6 +16,9 @@ struct SwipeAssignmentApp: App {
         WindowGroup {
             NavigationStack {
                 ProductsListView()
+                    .onAppear {
+                        productsViewModel.startNetworkMonitoring()
+                    }
             }
             .environmentObject(productsViewModel)
         }
