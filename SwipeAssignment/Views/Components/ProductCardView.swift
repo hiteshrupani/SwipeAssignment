@@ -86,7 +86,11 @@ extension ProductCardView {
     private func urlImage(url: String?) -> some View {
         AsyncImage(url: URL(string: url ?? "")) { phase in
             if let image = phase.image {
-                imageToDisplay(image: image)
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 100, height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             } else {
                 ProgressView()
                     .frame(width: 100, height: 100)
@@ -95,14 +99,12 @@ extension ProductCardView {
     }
     
     private func imagePlaceholder() -> some View {
-        imageToDisplay(image: Image(.productPlaceholder))
-    }
-    
-    private func imageToDisplay(image: Image) -> some View {
-        image
+        Image(systemName: "shippingbox.fill")
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .foregroundStyle(Color.gray)
+            .frame(width: 50, height: 50)
             .frame(width: 100, height: 100)
+            .background(Color.gray.opacity(0.2))
             .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
