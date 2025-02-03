@@ -15,8 +15,22 @@ class ProductsViewModel: ObservableObject {
     
     @Published private var allProducts: Products = []
     var productsToDisplay: Products {
+        // getting locally saved products if offline
+        let localProducts = networkMonitor.isConnected ? [] :
+        CoreDataManager.shared.fetchSavedProducts().map { productEntity in
+            GetProductResponse(
+                image: nil,
+                price: Double(productEntity.price ?? "0") ?? 0,
+                productName: productEntity.name,
+                productType: productEntity.type,
+                tax: Double(productEntity.tax ?? "0") ?? 0
+            )
+        }
+        
+        let combinedProducts = localProducts + allProducts
+        
         // filtering based on search text
-        let filteredProducts = searchText.isEmpty ? allProducts : allProducts.filter { (product) -> Bool in
+        let filteredProducts = searchText.isEmpty ? combinedProducts : combinedProducts.filter { (product) -> Bool in
             let lowercasedText = searchText.lowercased()
             
             return (product.productName ?? "").lowercased().contains(lowercasedText) ||

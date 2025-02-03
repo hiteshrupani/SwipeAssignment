@@ -281,6 +281,7 @@ extension ProductAddView {
         
         let successAction: () -> Void = {
             showAlert = false
+            viewModel.objectWillChange.send()
             dismiss()
         }
         
