@@ -122,6 +122,7 @@ extension ProductAddView {
     private func header() -> some View {
         HStack {
             Button {
+                viewModel.productImage = nil
                 dismiss()
             } label: {
                 CircleButtonView(iconName: "arrow.left")
@@ -177,6 +178,7 @@ extension ProductAddView {
                     .fill(Color.gray.opacity(0.2))
             }
     }
+    
     // MARK: - Category
     private func categoryMenu() -> some View {
         VStack (alignment: .leading) {

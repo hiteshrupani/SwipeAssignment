@@ -60,18 +60,16 @@ class ProductsViewModel: ObservableObject {
         guard localProducts.count > 0 else { return }
         
         for product in localProducts {
-            productToAdd = AddProductRequest(
+            let productDetails = AddProductRequest(
                 name: product.name ?? "Unknown",
                 type: product.type ?? "Unknown",
                 price: product.price ?? "0.00",
                 tax: product.tax ?? "0.00"
             )
             
-            productImage = product.imageData.flatMap { UIImage(data: $0) }
+            let image = product.imageData.flatMap { UIImage(data: $0) }
             
-            await addProduct()
-            
-            productImage = nil
+            await productService.addProduct(product: productDetails, image: image)
             
             CoreDataManager.shared.deleteSavedProduct(product)
         }
