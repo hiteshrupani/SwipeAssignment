@@ -14,16 +14,19 @@ class ProductsViewModel: ObservableObject {
     private let networkMonitor = NetworkMonitor()
     
     @Published var allProducts: Products = []
+#warning("Favorites are not getting sorted instantly, they need to be reloaded.")
     var productsToDisplay: Products {
-        if searchText == "" {
-            return allProducts.sorted { $0.isFavorite && !$1.isFavorite }
-        } else {
-            return allProducts.filter { (product) -> Bool in
-                let lowercasedText = searchText.lowercased()
-                return (product.productName ?? "").lowercased().contains(lowercasedText) ||
-                (product.productType ?? "").lowercased().contains(lowercasedText)
-            }
-            .sorted { $0.isFavorite && !$1.isFavorite }
+        // filtering based on search text
+        let filteredProducts = searchText.isEmpty ? allProducts : allProducts.filter { (product) -> Bool in
+            let lowercasedText = searchText.lowercased()
+            
+            return (product.productName ?? "").lowercased().contains(lowercasedText) ||
+            (product.productType ?? "").lowercased().contains(lowercasedText)
+        }
+        
+        // sorting favorite elements on top
+        return filteredProducts.sorted {
+            CoreDataManager.shared.isFavorite($0) && !CoreDataManager.shared.isFavorite($1)
         }
     }
     
@@ -32,10 +35,18 @@ class ProductsViewModel: ObservableObject {
     @Published var productToAdd: AddProductRequest?
     @Published var productImage: UIImage?
     
+    func updateProductsToDisplay() {
+        
+    }
+    
     // MARK: - Fetches products from server
     func loadProducts() async {
         let products = await productService.getProducts()
-        allProducts = products
+        
+        if !products.isEmpty && products != allProducts || allProducts.isEmpty {
+            print("Updated products list")
+            allProducts = products
+        }
     }
     
     // MARK: - Uploads products to server or saves locally
@@ -74,14 +85,7 @@ class ProductsViewModel: ObservableObject {
             CoreDataManager.shared.deleteSavedProduct(product)
         }
     }
-    
-    // MARK: - Toggle Favorite Property
-    func toggleFavorite(for productId: UUID) {
-        if let index = allProducts.firstIndex(where: { $0.id == productId }) {
-            allProducts[index].toggleFavorite()
-        }
-    }
-    
+
     // MARK: - Check connection status
     func startNetworkMonitoring() {
         Task {

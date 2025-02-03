@@ -21,10 +21,8 @@ struct ProductsListView: View {
                 // MARK: - List
                 if !viewModel.productsToDisplay.isEmpty {
                     List {
-                        ForEach (viewModel.productsToDisplay) { product in
-                            ProductCardView(product: product, favoriteAction: {
-                                viewModel.toggleFavorite(for: product.id)
-                            })
+                        ForEach (viewModel.productsToDisplay, id: \.self) { product in
+                            ProductCardView(product: product)
                         }
                     }
                     .listStyle(.plain)
