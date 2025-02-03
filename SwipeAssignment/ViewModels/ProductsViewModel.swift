@@ -13,7 +13,7 @@ class ProductsViewModel: ObservableObject {
     private let productService = ProductService()
     private let networkMonitor = NetworkMonitor()
     
-    @Published var allProducts: Products = []
+    @Published private var allProducts: Products = []
     var productsToDisplay: Products {
         // filtering based on search text
         let filteredProducts = searchText.isEmpty ? allProducts : allProducts.filter { (product) -> Bool in
@@ -33,10 +33,6 @@ class ProductsViewModel: ObservableObject {
     
     @Published var productToAdd: AddProductRequest?
     @Published var productImage: UIImage?
-    
-    func updateProductsToDisplay() {
-        
-    }
     
     // MARK: - Fetches products from server
     func loadProducts() async {
