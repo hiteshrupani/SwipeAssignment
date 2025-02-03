@@ -9,10 +9,12 @@ import SwiftUI
 
 struct ProductCardView: View {
     var product: GetProductResponse
+    var updateAction: () -> Void
     @State private var isFavorite: Bool
     
-    init(product: GetProductResponse) {
+    init(product: GetProductResponse, updateAction: @escaping () -> Void) {
         self.product = product
+        self.updateAction = updateAction
         _isFavorite = State(initialValue: CoreDataManager.shared.isFavorite(product))
     }
     
@@ -33,7 +35,7 @@ struct ProductCardView: View {
 }
 
 #Preview {
-    ProductCardView(product: GetProductResponse(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0))
+    ProductCardView(product: GetProductResponse(image: "https://placehold.co/125/jpg?text=!\nOops!", price: 66.0, productName: "Daisies", productType: "Product", tax: 6.0), updateAction: {})
 }
 
 extension ProductCardView {
@@ -62,6 +64,7 @@ extension ProductCardView {
                 Button {
                     CoreDataManager.shared.toggleFavorite(for: product)
                     isFavorite.toggle()
+                    updateAction()
                 } label: {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .font(.title2)

@@ -22,7 +22,9 @@ struct ProductsListView: View {
                 if !viewModel.productsToDisplay.isEmpty {
                     List {
                         ForEach (viewModel.productsToDisplay, id: \.self) { product in
-                            ProductCardView(product: product)
+                            ProductCardView(product: product, updateAction: {
+                                viewModel.objectWillChange.send()
+                            })
                         }
                     }
                     .listStyle(.plain)

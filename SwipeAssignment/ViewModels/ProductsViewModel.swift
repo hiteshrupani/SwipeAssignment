@@ -14,7 +14,6 @@ class ProductsViewModel: ObservableObject {
     private let networkMonitor = NetworkMonitor()
     
     @Published var allProducts: Products = []
-#warning("Favorites are not getting sorted instantly, they need to be reloaded.")
     var productsToDisplay: Products {
         // filtering based on search text
         let filteredProducts = searchText.isEmpty ? allProducts : allProducts.filter { (product) -> Bool in
