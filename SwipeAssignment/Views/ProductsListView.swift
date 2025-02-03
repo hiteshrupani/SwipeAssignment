@@ -19,18 +19,21 @@ struct ProductsListView: View {
                 header()
                 
                 // MARK: - List
-                List {
-                    ForEach (viewModel.productsToDisplay) { product in
-                        ProductCardView(product: product, favoriteAction: {
-                            viewModel.toggleFavorite(for: product.id)
-                        })
+                if !viewModel.productsToDisplay.isEmpty {
+                    List {
+                        ForEach (viewModel.productsToDisplay) { product in
+                            ProductCardView(product: product, favoriteAction: {
+                                viewModel.toggleFavorite(for: product.id)
+                            })
+                        }
                     }
+                    .listStyle(.plain)
+                } else {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
                 }
-                .listStyle(.plain)
             }
-        }
-        .task {
-            await viewModel.loadProducts()
         }
         .refreshable {
             await viewModel.loadProducts()

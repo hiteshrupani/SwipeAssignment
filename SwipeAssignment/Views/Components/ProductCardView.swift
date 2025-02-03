@@ -11,6 +11,8 @@ struct ProductCardView: View {
     var product: GetProductResponse
     var favoriteAction: () -> Void
     
+    @State var isFavorite: Bool = false
+    
     var body: some View {
         HStack {
             if product.image != "" {
@@ -55,9 +57,9 @@ extension ProductCardView {
                 Spacer()
                 
                 Button {
-                    favoriteAction()
+                    isFavorite.toggle()
                 } label: {
-                    Image(systemName: product.isFavorite ? "heart.fill" : "heart")
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .font(.title2)
                         .fontWeight(.medium)
                         .foregroundStyle(Color.theme.accent)

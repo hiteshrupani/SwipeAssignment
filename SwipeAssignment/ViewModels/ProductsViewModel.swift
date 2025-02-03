@@ -73,7 +73,6 @@ class ProductsViewModel: ObservableObject {
             
             CoreDataManager.shared.deleteSavedProduct(product)
         }
-        await loadProducts()
     }
     
     // MARK: - Toggle Favorite Property
@@ -88,6 +87,8 @@ class ProductsViewModel: ObservableObject {
         Task {
             for await _ in networkMonitor.$isConnected.values where networkMonitor.isConnected {
                 await uploadLocalProducts()
+                print("Loading products within Network Monitoring")
+                await loadProducts()
             }
         }
     }
