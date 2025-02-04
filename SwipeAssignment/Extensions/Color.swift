@@ -16,6 +16,5 @@ struct ColorTheme {
     let accent = Color.accentColor
     let text = Color(.label)
     let background = Color(.systemBackground)
-    let groupedBackground = Color(.secondarySystemBackground)
     let shadow = Color.accentColor.opacity(0.33)
 }

@@ -18,6 +18,17 @@ struct ProductAddView: View {
         case success
     }
     
+    enum ProductCategory: String, CaseIterable {
+        case groceries
+        case electronics
+        case fashion
+        case home
+        case beauty
+        case sports
+        case education
+        case toys
+    }
+    
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var showAlert: Bool = false
     

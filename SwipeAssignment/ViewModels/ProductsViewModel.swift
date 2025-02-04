@@ -14,6 +14,10 @@ class ProductsViewModel: ObservableObject {
     private let networkMonitor = NetworkMonitor()
     
     @Published private var allProducts: Products = []
+    @Published var searchText: String = ""
+    @Published var productToAdd: AddProductRequest?
+    @Published var productImage: UIImage?
+    
     var productsToDisplay: Products {
         // getting locally saved products if offline
         let localProducts = networkMonitor.isConnected ? [] :
@@ -42,11 +46,6 @@ class ProductsViewModel: ObservableObject {
             CoreDataManager.shared.isFavorite($0) && !CoreDataManager.shared.isFavorite($1)
         }
     }
-    
-    @Published var searchText: String = ""
-    
-    @Published var productToAdd: AddProductRequest?
-    @Published var productImage: UIImage?
     
     // MARK: - Fetches products from server
     func loadProducts() async {

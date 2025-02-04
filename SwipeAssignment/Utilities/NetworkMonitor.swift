@@ -8,6 +8,7 @@
 import Foundation
 import Network
 
+// MARK: - Internet Connection Monitor
 class NetworkMonitor: ObservableObject {
     @Published private(set) var isConnected = false
     private let monitor = NWPathMonitor()

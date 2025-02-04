@@ -27,14 +27,3 @@ struct AddProductRequest: Codable {
     let price: String
     let tax: String
 }
-
-enum ProductCategory: String, CaseIterable {
-    case groceries
-    case electronics
-    case fashion
-    case home
-    case beauty
-    case sports
-    case education
-    case toys
-}
